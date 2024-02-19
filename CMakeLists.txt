@@ -64,7 +64,7 @@ FetchContent_GetProperties(gmsh
   BINARY_DIR GMSH_BINARY_DIR
   )
 
-add_executable(main main.cpp)
+add_executable(main main.cpp lib.cpp)
 
 # This is not very elegant, but gmsh is not yet using
 # target_include_directories syntax yet, so the required include folders are
@@ -97,8 +97,7 @@ IF(EMSCRIPTEN)
     SUFFIX ".html"
     )
   target_compile_options(main PUBLIC
-    -sNO_DISABLE_EXCEPTION_CATCHING
-    -sINITIAL_MEMORY=67108864)
+    -sNO_DISABLE_EXCEPTION_CATCHING)
   target_link_options(main PUBLIC
     -sINITIAL_MEMORY=67108864
     --preload-file ${CMAKE_SOURCE_DIR}/data/out.lvk88@out.lvk88)
