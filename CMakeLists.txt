@@ -56,6 +56,7 @@ FetchContent_Declare(gmsh
   GIT_PROGRESS ON
   )
 
+message(STATUS "Cloning gmsh sources")
 FetchContent_MakeAvailable(gmsh)
 
 FetchContent_GetProperties(gmsh
@@ -64,6 +65,11 @@ FetchContent_GetProperties(gmsh
   )
 
 add_executable(main main.cpp)
+
+# This is not very elegant, but gmsh is not yet using
+# target_include_directories syntax yet, so the required include folders are
+# not going to be captured by target_link_libraries(main PUBLIC lib) later. So
+# we need to manually add the includes from gmsh here
 target_include_directories(main PUBLIC
   ${GMSH_SRC_DIR}/src/common
   ${GMSH_SRC_DIR}/src/fltk
@@ -84,3 +90,16 @@ target_link_libraries(main PUBLIC lib)
 add_custom_command(TARGET main
   POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/data/out.lvk88 ${CMAKE_BINARY_DIR})
+
+IF(EMSCRIPTEN)
+  set_target_properties(main
+    PROPERTIES
+    SUFFIX ".html"
+    )
+  target_compile_options(main PUBLIC
+    -sNO_DISABLE_EXCEPTION_CATCHING
+    -sINITIAL_MEMORY=67108864)
+  target_link_options(main PUBLIC
+    -sINITIAL_MEMORY=67108864
+    --preload-file ${CMAKE_SOURCE_DIR}/data/out.lvk88@out.lvk88)
+ENDIF()
