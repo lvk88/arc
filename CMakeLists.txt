@@ -64,13 +64,14 @@ FetchContent_GetProperties(gmsh
   BINARY_DIR GMSH_BINARY_DIR
   )
 
-add_executable(main main.cpp lib.cpp)
+add_library(arclib lib.cpp)
+add_executable(main main.cpp)
 
 # This is not very elegant, but gmsh is not yet using
 # target_include_directories syntax yet, so the required include folders are
 # not going to be captured by target_link_libraries(main PUBLIC lib) later. So
 # we need to manually add the includes from gmsh here
-target_include_directories(main PUBLIC
+target_include_directories(arclib PUBLIC
   ${GMSH_SRC_DIR}/src/common
   ${GMSH_SRC_DIR}/src/fltk
   ${GMSH_SRC_DIR}/src/geo
@@ -84,8 +85,8 @@ target_include_directories(main PUBLIC
   ${GMSH_SRC_DIR}/api
   ${GMSH_BINARY_DIR}/src/common
   )
-
-target_link_libraries(main PUBLIC lib)
+target_link_libraries(arclib PUBLIC lib)
+target_link_libraries(main PUBLIC arclib)
 
 add_custom_command(TARGET main
   POST_BUILD
@@ -101,4 +102,12 @@ IF(EMSCRIPTEN)
   target_link_options(main PUBLIC
     -sINITIAL_MEMORY=67108864
     --preload-file ${CMAKE_SOURCE_DIR}/data/out.lvk88@out.lvk88)
+
+  add_executable(emarclib bindings.cpp)
+  target_link_libraries(emarclib PUBLIC arclib)
+  target_link_options(emarclib PUBLIC 
+    -lembind
+    -sINITIAL_MEMORY=67108864
+    --embind-emit-tsd emarclib.d.ts
+    )
 ENDIF()
