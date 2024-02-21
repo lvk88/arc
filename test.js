@@ -22,6 +22,8 @@ async function main() {
 
     module.mesh_image(img)
 
+    img.delete()
+
   } catch (error) {
     console.log('Error readin file: ', error);
   }
