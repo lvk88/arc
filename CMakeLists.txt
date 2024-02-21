@@ -109,5 +109,6 @@ IF(EMSCRIPTEN)
     -lembind
     -sINITIAL_MEMORY=67108864
     --embind-emit-tsd emarclib.d.ts
+    -sMODULARIZE=1
     )
 ENDIF()
