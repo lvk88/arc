@@ -110,5 +110,12 @@ IF(EMSCRIPTEN)
     -sINITIAL_MEMORY=67108864
     --embind-emit-tsd emarclib.d.ts
     -sMODULARIZE=1
+    -sNO_DISABLE_EXCEPTION_CATCHING
     )
+
+  add_custom_target(copy_js_test
+    ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/test.js ${CMAKE_BINARY_DIR})
+
+  add_dependencies(emarclib copy_js_test)
+
 ENDIF()
