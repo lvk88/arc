@@ -1,0 +1,2 @@
+CompileFlags:
+  Add: [-target,wasm32-unknown-emscripten,-fignore-exceptions,-fvisibility=default,-mllvm,-combiner-global-alias-analysis=false,-mllvm,-enable-emscripten-sjlj,-mllvm,-disable-lsr,--sysroot=/home/laszlo/tools/emsdk/upstream/emscripten/cache/sysroot,-DEMSCRIPTEN,-Xclang,-iwithsysroot/include/fakesdl,-Xclang,-iwithsysroot/include/compat]
