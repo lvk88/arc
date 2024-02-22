@@ -15,7 +15,15 @@ struct SizedSingleChannelImage
   std::vector<std::uint8_t> data;
 };
 
-void mesh_image(const SizedSingleChannelImage& img);
+// Not a complete mesh, just a bunch of nodes
+// and edges connecting these nodes
+struct EdgeMesh
+{
+  std::vector<double> nodeCoordinates;
+  std::vector<std::size_t> edgeNodes;
+};
+
+EdgeMesh mesh_image(const SizedSingleChannelImage& img);
 
 }
 }

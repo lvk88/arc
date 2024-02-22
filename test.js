@@ -20,12 +20,20 @@ async function main() {
 
     const img = new module.SizedSingleChannelImage(width, height, pixelArray);
 
-    module.mesh_image(img)
+    const res = module.mesh_image(img)
+
+    console.log(res);
+    console.log(res.nodeCoordinates);
+    console.log(res.edgeNodes);
+
+    console.log("Number of node coordinates: ", res.nodeCoordinates.size());
+    console.log("Number of edge nodes: ", res.edgeNodes.size());
 
     img.delete()
+    res.delete()
 
   } catch (error) {
-    console.log('Error readin file: ', error);
+    console.log('Error reading file: ', error);
   }
 }
 

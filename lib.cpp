@@ -87,7 +87,7 @@ int EndPos(const char *name, PViewData *d)
 
 }
 
-void mesh_image(const SizedSingleChannelImage& img)
+EdgeMesh mesh_image(const SizedSingleChannelImage& img)
 {
   gmsh::initialize();
 
@@ -122,9 +122,21 @@ void mesh_image(const SizedSingleChannelImage& img)
   gmsh::model::geo::synchronize();
 
   gmsh::model::mesh::generate(2);
-  gmsh::write("test.stl");
+
+  gmsh::model::mesh::createEdges();
+
+  std::vector<size_t> nodeTags;
+  std::vector<double> coords;
+  std::vector<double> parametricCoords;
+  gmsh::model::mesh::getNodes(nodeTags, coords, parametricCoords);
+  
+  std::vector<size_t> edgeTags;
+  std::vector<size_t> edgeNodes;
+  gmsh::model::mesh::getAllEdges(edgeTags, edgeNodes);
 
   gmsh::finalize();
+
+  return EdgeMesh{coords, edgeNodes};
 }
 
 

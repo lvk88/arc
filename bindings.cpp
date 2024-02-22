@@ -2,8 +2,6 @@
 
 #include <cstdint>
 #include <emscripten/bind.h>
-#include <stdexcept>
-#include <iostream>
 
 lvk88::arc::SizedSingleChannelImage* createSizedSingleImageFromJSArray(int width, int height, emscripten::val js_data)
 {
@@ -24,6 +22,12 @@ EMSCRIPTEN_BINDINGS(emarclib)
     .property("height", &lvk88::arc::SizedSingleChannelImage::height)
     .property("data", &lvk88::arc::SizedSingleChannelImage::data);
 
+  emscripten::class_<lvk88::arc::EdgeMesh>("EdgeMesh")
+    .property("nodeCoordinates", &lvk88::arc::EdgeMesh::nodeCoordinates)
+    .property("edgeNodes", &lvk88::arc::EdgeMesh::edgeNodes );
+
   emscripten::function("mesh_image", &lvk88::arc::mesh_image);
   emscripten::register_vector<std::uint8_t>("Uint8Vector");
+  emscripten::register_vector<double>("DoubleVector");
+  emscripten::register_vector<std::size_t>("SizeTVector");
 }
