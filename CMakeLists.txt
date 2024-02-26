@@ -119,9 +119,4 @@ IF(EMSCRIPTEN)
     PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/pkg)
 
-  add_custom_target(copy_js_test
-    ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/test.js ${CMAKE_BINARY_DIR})
-
-  add_dependencies(emarclib copy_js_test)
-
 ENDIF()
