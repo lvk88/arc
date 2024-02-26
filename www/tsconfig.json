@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist/",
+    "sourceMap": true,
+    "noImplicitAny": true,
+    "module": "esnext",
+    "target": "esnext",
+    "jsx": "react",
+    "allowJs": true,
+    "moduleResolution": "node",
+    "paths": {
+      "emarclib": ["../pkg/emarclib.js"],
+      "emarclib-types": ["../pkg/emarclib_types.d.ts"],
+    },
+  }
+}

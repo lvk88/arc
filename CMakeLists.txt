@@ -108,10 +108,16 @@ IF(EMSCRIPTEN)
   target_link_options(emarclib PUBLIC 
     -lembind
     -sINITIAL_MEMORY=67108864
-    --embind-emit-tsd emarclib.d.ts
+    --embind-emit-tsd emarclib-types.d.ts
     -sMODULARIZE=1
+    -sEXPORT_ES6=1
+    -sENVIRONMENT='web'
     -sNO_DISABLE_EXCEPTION_CATCHING
     )
+
+  set_target_properties(emarclib
+    PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/pkg)
 
   add_custom_target(copy_js_test
     ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/test.js ${CMAKE_BINARY_DIR})
