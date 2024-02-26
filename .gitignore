@@ -1,3 +1,5 @@
 # vim swap files
 *.sw[puo]
 .clangd
+pkg/*
+!pkg/.gitkeep
