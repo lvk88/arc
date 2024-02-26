@@ -10,7 +10,7 @@
     "moduleResolution": "node",
     "paths": {
       "emarclib": ["../pkg/emarclib.js"],
-      "emarclib-types": ["../pkg/emarclib_types.d.ts"],
+      "emarclib-types": ["../pkg/emarclib-types.d.ts"],
     },
   }
 }
