@@ -113,6 +113,7 @@ IF(EMSCRIPTEN)
     -sEXPORT_ES6=1
     -sENVIRONMENT='web'
     -sNO_DISABLE_EXCEPTION_CATCHING
+    -sASSERTIONS=1
     )
 
   set_target_properties(emarclib
