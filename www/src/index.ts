@@ -56,6 +56,9 @@ const main = async () => {
     path.lineTo(x_1, 200 - y_1);
   }
   ctx.stroke(path);
+  edgeNodes.delete();
+  edgeNodes.delete();
+  res.delete();
 }
 
 main();
