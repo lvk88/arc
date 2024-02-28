@@ -129,6 +129,23 @@ EdgeMesh mesh_image(const SizedSingleChannelImage& img)
   std::vector<double> coords;
   std::vector<double> parametricCoords;
   gmsh::model::mesh::getNodes(nodeTags, coords, parametricCoords);
+
+  // The i-th node coordinates in coords does not correspond to the node with
+  // tag `i`. Therefore, we reorder the node coordinates here, such that they
+  // are in the order of the tag numbers
+  size_t max_node_tag = 0;
+  gmsh::model::mesh::getMaxNodeTag(max_node_tag);
+  std::vector<double> coords_in_tag_order(3 * max_node_tag);
+  for(int i = 0; i < nodeTags.size(); ++i)
+  {
+    const auto& current_tag = nodeTags[i];
+    const double x = coords[3 * i];
+    const double y = coords[3 * i + 1];
+    const double z = coords[3 * i + 2];
+    coords_in_tag_order[3 * current_tag] = x;
+    coords_in_tag_order[3 * current_tag + 1] = y;
+    coords_in_tag_order[3 * current_tag + 2] = z;
+  }
   
   std::vector<size_t> edgeTags;
   std::vector<size_t> edgeNodes;
@@ -136,7 +153,7 @@ EdgeMesh mesh_image(const SizedSingleChannelImage& img)
 
   gmsh::finalize();
 
-  return EdgeMesh{coords, edgeNodes};
+  return EdgeMesh{coords_in_tag_order, edgeNodes};
 }
 
 

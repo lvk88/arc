@@ -36,13 +36,26 @@ const main = async () => {
   // use nodeCoordinates through res, e.g.:
   // const x = res.nodeCoordinates.get(i)
   const nodeCoordinates = res.nodeCoordinates;
+  const edgeNodes = res.edgeNodes;
+  ctx.lineWidth = 0.5;
 
-  for(var i = 0; i < nodeCoordinates.size(); i += 3){
-    const x = nodeCoordinates.get(i);
-    const y = nodeCoordinates.get(i + 1);
+  const path = new Path2D();
 
-    ctx.fillRect(x, 200 - y, 1, 1);
+  for(var i = 0; i < edgeNodes.size(); i += 2){
+    const node_0 = edgeNodes.get(i);
+    const node_1 = edgeNodes.get(i + 1);
+
+    const x_0 = nodeCoordinates.get(3 * node_0);
+    const y_0 = nodeCoordinates.get(3 * node_0 + 1);
+
+    path.moveTo(x_0, 200 - y_0);
+
+    const x_1 = nodeCoordinates.get(3 * node_1);
+    const y_1 = nodeCoordinates.get(3 * node_1 + 1);
+
+    path.lineTo(x_1, 200 - y_1);
   }
+  ctx.stroke(path);
 }
 
 main();
