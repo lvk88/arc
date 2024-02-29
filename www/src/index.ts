@@ -38,6 +38,7 @@ const main = async () => {
   const nodeCoordinates = res.nodeCoordinates;
   const edgeNodes = res.edgeNodes;
   ctx.lineWidth = 0.5;
+  ctx.scale(2.0, 2.0);
 
   const path = new Path2D();
 
@@ -57,7 +58,7 @@ const main = async () => {
   }
   ctx.stroke(path);
   edgeNodes.delete();
-  edgeNodes.delete();
+  nodeCoordinates.delete();
   res.delete();
 }
 
