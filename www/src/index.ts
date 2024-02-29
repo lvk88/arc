@@ -4,6 +4,37 @@ import { MainModule } from "emarclib-types";
 const canvas = <HTMLCanvasElement>document.getElementById("postproc-area");
 const ctx = canvas.getContext("2d");
 
+const fileUpload = <HTMLInputElement>document.getElementById("image-upload");
+
+fileUpload.addEventListener("change",(e: Event) => {
+  const files = fileUpload.files;
+  if(files.length == 0) return;
+  const file = files[0];
+
+  const image = new Image();
+  image.src = URL.createObjectURL(file);
+  image.onload = () => {
+    createImageBitmap(image).then((imageBitmap) => {
+      ctx.drawImage(imageBitmap, 0, 0);
+      const grayScaleBuffer = new Uint8ClampedArray(400 * 400);
+      const imgPixels = ctx.getImageData(0, 0, 400, 400);
+      for(var i = 0; i < imgPixels.width; ++i){
+        for(var j = 0; j < imgPixels.height; ++j){
+          var value = 0.299 * imgPixels.data[4 * i + 4 * j * imgPixels.width];
+          value += 0.587 * imgPixels.data[4 * i + 1 + 4 * j * imgPixels.width];
+          value += 0.114 * imgPixels.data[4 * i + 2 + 4 * j * imgPixels.width];
+          imgPixels.data[4 * i + 4 * j * imgPixels.width] = value;
+          imgPixels.data[4 * i + 1 + 4 * j * imgPixels.width] = value;
+          imgPixels.data[4 * i + 2 + 4 * j * imgPixels.width] = value;
+        }
+      }
+
+      ctx.putImageData(imgPixels, 0, 0);
+    });
+  };
+});
+
+
 const readBufferData = (buffer: Uint8Array) => {
   const magicNumber = buffer[0];
   const width = new DataView(buffer.buffer).getUint32(1, true);

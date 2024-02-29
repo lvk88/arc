@@ -6,6 +6,9 @@ const path = require('path');
 module.exports = {
   entry: './src/bootstrap.ts',
   devtool: 'source-map',
+  performance: {
+    maxAssetSize: 10485760,
+  },
   module: {
     rules: [
       {
