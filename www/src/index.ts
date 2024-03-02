@@ -1,75 +1,23 @@
 import Module from "emarclib";
-import { MainModule } from "emarclib-types";
+import { MainModule, EdgeMesh } from "emarclib-types";
 
+const fileUpload = <HTMLInputElement>document.getElementById("image-upload");
 const canvas = <HTMLCanvasElement>document.getElementById("postproc-area");
 const ctx = canvas.getContext("2d");
 
-const fileUpload = <HTMLInputElement>document.getElementById("image-upload");
-
-fileUpload.addEventListener("change",(e: Event) => {
-  const files = fileUpload.files;
-  if(files.length == 0) return;
-  const file = files[0];
-
-  const image = new Image();
-  image.src = URL.createObjectURL(file);
-  image.onload = () => {
-    createImageBitmap(image).then((imageBitmap) => {
-      ctx.drawImage(imageBitmap, 0, 0);
-      const grayScaleBuffer = new Uint8ClampedArray(400 * 400);
-      const imgPixels = ctx.getImageData(0, 0, 400, 400);
-      for(var i = 0; i < imgPixels.width; ++i){
-        for(var j = 0; j < imgPixels.height; ++j){
-          var value = 0.299 * imgPixels.data[4 * i + 4 * j * imgPixels.width];
-          value += 0.587 * imgPixels.data[4 * i + 1 + 4 * j * imgPixels.width];
-          value += 0.114 * imgPixels.data[4 * i + 2 + 4 * j * imgPixels.width];
-          imgPixels.data[4 * i + 4 * j * imgPixels.width] = value;
-          imgPixels.data[4 * i + 1 + 4 * j * imgPixels.width] = value;
-          imgPixels.data[4 * i + 2 + 4 * j * imgPixels.width] = value;
-        }
-      }
-
-      ctx.putImageData(imgPixels, 0, 0);
-    });
-  };
+const m : MainModule = await Module().then((module: MainModule) => {
+  fileUpload.disabled = false;
+  return module;
 });
 
-
-const readBufferData = (buffer: Uint8Array) => {
-  const magicNumber = buffer[0];
-  const width = new DataView(buffer.buffer).getUint32(1, true);
-  const height = new DataView(buffer.buffer).getUint32(5, true);
-
-  const pixelData = buffer.slice(9);
-
-  console.log(magicNumber);
-  console.log(width);
-  console.log(height);
-  console.log(pixelData);
-  return {
-    width,
-    height,
-    pixelData
-  };
-};
-
-const main = async () => {
-  const m: MainModule = await Module();
-  const f = await fetch("out.lvk88");
-  const buffer = new Uint8Array(await f.arrayBuffer());
-  const data = readBufferData(buffer);
-
-  const img = new m.SizedSingleChannelImage(data.width, data.height, data.pixelData);
-
-  const res = m.mesh_image(img);
-
+const renderMesh = async (mesh: EdgeMesh) => {
   // Note: I keep getting OOM errors if I try to
   // use nodeCoordinates through res, e.g.:
   // const x = res.nodeCoordinates.get(i)
-  const nodeCoordinates = res.nodeCoordinates;
-  const edgeNodes = res.edgeNodes;
+  const nodeCoordinates = mesh.nodeCoordinates;
+  const edgeNodes = mesh.edgeNodes;
   ctx.lineWidth = 0.5;
-  ctx.scale(2.0, 2.0);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   const path = new Path2D();
 
@@ -80,17 +28,45 @@ const main = async () => {
     const x_0 = nodeCoordinates.get(3 * node_0);
     const y_0 = nodeCoordinates.get(3 * node_0 + 1);
 
-    path.moveTo(x_0, 200 - y_0);
+    path.moveTo(x_0, canvas.height - y_0);
 
     const x_1 = nodeCoordinates.get(3 * node_1);
     const y_1 = nodeCoordinates.get(3 * node_1 + 1);
 
-    path.lineTo(x_1, 200 - y_1);
+    path.lineTo(x_1, canvas.height - y_1);
   }
   ctx.stroke(path);
   edgeNodes.delete();
   nodeCoordinates.delete();
-  res.delete();
+  mesh.delete();
 }
 
-main();
+
+fileUpload.addEventListener("change",(e: Event) => {
+  const files = fileUpload.files;
+  if(files.length == 0) return;
+  const file = files[0];
+
+  const image = new Image();
+  image.src = URL.createObjectURL(file);
+  image.onload = () => {
+    createImageBitmap(image)
+    .then( async (imageBitmap) => {
+      ctx.drawImage(imageBitmap, 0, 0, 400, 400);
+      const grayScaleBuffer = new Uint8Array(400 * 400);
+      const imgPixels = ctx.getImageData(0, 0, 400, 400);
+      for(var i = 0; i < imgPixels.width; ++i){
+        for(var j = 0; j < imgPixels.height; ++j){
+          var value = 0.299 * imgPixels.data[4 * i + 4 * j * imgPixels.width];
+          value += 0.587 * imgPixels.data[4 * i + 1 + 4 * j * imgPixels.width];
+          value += 0.114 * imgPixels.data[4 * i + 2 + 4 * j * imgPixels.width];
+          grayScaleBuffer[i + j * 400] = value;
+        }
+      }
+      const sizedSingleChannelImage = new m.SizedSingleChannelImage(400, 400, grayScaleBuffer);
+      const mesh = m.mesh_image(sizedSingleChannelImage);
+      return mesh;
+    })
+    .then(renderMesh);
+  }
+})
