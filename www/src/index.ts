@@ -2,13 +2,12 @@ import Module from "emarclib";
 import { MainModule, EdgeMesh } from "emarclib-types";
 
 const fileUpload = <HTMLInputElement>document.getElementById("image-upload");
+const meshButton = <HTMLButtonElement>document.getElementById("mesh-btn");
 const canvas = <HTMLCanvasElement>document.getElementById("postproc-area");
 const ctx = canvas.getContext("2d");
 
-const m : MainModule = await Module().then((module: MainModule) => {
-  fileUpload.disabled = false;
-  return module;
-});
+const m : MainModule = await Module();
+fileUpload.disabled = false;
 
 const renderMesh = async (mesh: EdgeMesh) => {
   // Note: I keep getting OOM errors if I try to
@@ -41,32 +40,31 @@ const renderMesh = async (mesh: EdgeMesh) => {
   mesh.delete();
 }
 
-
-fileUpload.addEventListener("change",(e: Event) => {
+fileUpload.addEventListener("change", (e: Event) => {
   const files = fileUpload.files;
   if(files.length == 0) return;
   const file = files[0];
-
   const image = new Image();
   image.src = URL.createObjectURL(file);
   image.onload = () => {
     createImageBitmap(image)
-    .then( async (imageBitmap) => {
-      ctx.drawImage(imageBitmap, 0, 0, 400, 400);
-      const grayScaleBuffer = new Uint8Array(400 * 400);
-      const imgPixels = ctx.getImageData(0, 0, 400, 400);
-      for(var i = 0; i < imgPixels.width; ++i){
-        for(var j = 0; j < imgPixels.height; ++j){
-          var value = 0.299 * imgPixels.data[4 * i + 4 * j * imgPixels.width];
-          value += 0.587 * imgPixels.data[4 * i + 1 + 4 * j * imgPixels.width];
-          value += 0.114 * imgPixels.data[4 * i + 2 + 4 * j * imgPixels.width];
-          grayScaleBuffer[i + j * 400] = value;
-        }
-      }
-      const sizedSingleChannelImage = new m.SizedSingleChannelImage(400, 400, grayScaleBuffer);
-      const mesh = m.mesh_image(sizedSingleChannelImage);
-      return mesh;
-    })
-    .then(renderMesh);
+    .then( imageBitmap => ctx.drawImage(imageBitmap, 0, 0, 400, 400) )
+    .then( () => meshButton.disabled = false );
   }
-})
+});
+
+meshButton.addEventListener("click", (ev: MouseEvent) => {
+  const grayScaleBuffer = new Uint8Array(400 * 400);
+  const imgPixels = ctx.getImageData(0, 0, 400, 400);
+  for(var i = 0; i < imgPixels.width; ++i){
+    for(var j = 0; j < imgPixels.height; ++j){
+      var value = 0.299 * imgPixels.data[4 * i + 4 * j * imgPixels.width];
+      value += 0.587 * imgPixels.data[4 * i + 1 + 4 * j * imgPixels.width];
+      value += 0.114 * imgPixels.data[4 * i + 2 + 4 * j * imgPixels.width];
+      grayScaleBuffer[i + j * 400] = value;
+    }
+  }
+  const sizedSingleChannelImage = new m.SizedSingleChannelImage(400, 400, grayScaleBuffer);
+  const mesh = m.mesh_image(sizedSingleChannelImage);
+  renderMesh(mesh);
+});
