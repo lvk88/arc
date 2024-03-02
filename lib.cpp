@@ -76,8 +76,10 @@ int EndPos(const char *name, PViewData *d)
   d->setName(title);
   d->setFileName(name_pos);
   if(d->finalize()) {
-    new PView(d);
-    return 1;
+    // This is different from gmsh code. We return the tag of the view here,
+    // so that we can refer to it later.
+    auto* view = new PView(d);
+    return view->getTag();
   }
   else {
     delete d;
@@ -90,8 +92,9 @@ int EndPos(const char *name, PViewData *d)
 EdgeMesh mesh_image(const SizedSingleChannelImage& img)
 {
   gmsh::initialize();
+  //gmsh::option::setNumber("General.Verbosity", 99);
 
-  EndPos("image.lvk88", Img2Data(img));
+  auto view_tag = EndPos("image.lvk88", Img2Data(img));
 
   gmsh::plugin::setString("ModifyComponents", "Expression0", "1 + v0^3 * 10");
   gmsh::plugin::run("ModifyComponents");
@@ -101,10 +104,10 @@ EdgeMesh mesh_image(const SizedSingleChannelImage& img)
   gmsh::model::mesh::field::setAsBackgroundMesh(bg_field);
 
   double w;
-  gmsh::view::option::getNumber(1, "MaxX", w);
+  gmsh::view::option::getNumber(view_tag, "MaxX", w);
 
   double h;
-  gmsh::view::option::getNumber(1, "MaxY", h);
+  gmsh::view::option::getNumber(view_tag, "MaxY", h);
 
   int point_1 = gmsh::model::geo::addPoint(0.0, 0.0, 0.0, w);
   int point_2 = gmsh::model::geo::addPoint(w, 0.0, 0.0, w);
