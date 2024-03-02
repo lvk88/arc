@@ -107,7 +107,7 @@ IF(EMSCRIPTEN)
   target_link_libraries(emarclib PUBLIC arclib)
   target_link_options(emarclib PUBLIC 
     -lembind
-    -sINITIAL_MEMORY=67108864
+    -sINITIAL_MEMORY=134217728
     --embind-emit-tsd emarclib-types.d.ts
     -sMODULARIZE=1
     -sEXPORT_ES6=1
