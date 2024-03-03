@@ -89,7 +89,7 @@ int EndPos(const char *name, PViewData *d)
 
 }
 
-EdgeMesh mesh_image(const SizedSingleChannelImage& img)
+EdgeMesh mesh_image(const SizedSingleChannelImage& img, const MeshOptions& mesh_options)
 {
   gmsh::initialize();
   //gmsh::option::setNumber("General.Verbosity", 99);
@@ -123,6 +123,10 @@ EdgeMesh mesh_image(const SizedSingleChannelImage& img)
   gmsh::model::geo::addPlaneSurface({loop});
 
   gmsh::model::geo::synchronize();
+
+  gmsh::option::setNumber("Mesh.Algorithm", mesh_options.algorithm);
+  gmsh::option::setNumber("Mesh.MeshSizeFactor", mesh_options.mesh_size_factor);
+  gmsh::option::setNumber("Mesh.MeshSizeMin", mesh_options.mesh_size_min);
 
   gmsh::model::mesh::generate(2);
 

@@ -65,6 +65,7 @@ meshButton.addEventListener("click", (ev: MouseEvent) => {
     }
   }
   const sizedSingleChannelImage = new m.SizedSingleChannelImage(400, 400, grayScaleBuffer);
-  const mesh = m.mesh_image(sizedSingleChannelImage);
+  const meshOptions = new m.MeshOptions();
+  const mesh = m.mesh_image(sizedSingleChannelImage, meshOptions);
   renderMesh(mesh);
 });

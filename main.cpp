@@ -52,7 +52,9 @@ int main(int argc, char** argv)
 {
   const auto& img = read_lvk88("out.lvk88");
 
-  lvk88::arc::mesh_image(img);
+  lvk88::arc::MeshOptions default_options;
+
+  lvk88::arc::mesh_image(img, default_options);
 
   return 0;
 }

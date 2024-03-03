@@ -26,6 +26,12 @@ EMSCRIPTEN_BINDINGS(emarclib)
     .property("nodeCoordinates", &lvk88::arc::EdgeMesh::nodeCoordinates)
     .property("edgeNodes", &lvk88::arc::EdgeMesh::edgeNodes );
 
+  emscripten::class_<lvk88::arc::MeshOptions>("MeshOptions")
+    .constructor<>()
+    .property("mesh_size_factor", &lvk88::arc::MeshOptions::mesh_size_factor)
+    .property("mesh_size_min", &lvk88::arc::MeshOptions::mesh_size_min)
+    .property("algorithm", &lvk88::arc::MeshOptions::algorithm);
+
   emscripten::function("mesh_image", &lvk88::arc::mesh_image);
   emscripten::register_vector<std::uint8_t>("Uint8Vector");
   emscripten::register_vector<double>("DoubleVector");
