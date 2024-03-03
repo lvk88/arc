@@ -66,6 +66,11 @@ meshButton.addEventListener("click", (ev: MouseEvent) => {
   }
   const sizedSingleChannelImage = new m.SizedSingleChannelImage(400, 400, grayScaleBuffer);
   const meshOptions = new m.MeshOptions();
+  meshOptions.mesh_size_min = parseFloat((<HTMLInputElement>document.getElementById("mesh-min-length")).value);
+  meshOptions.mesh_size_factor = parseFloat((<HTMLInputElement>document.getElementById("mesh-length-factor")).value);
+  meshOptions.algorithm = parseInt((<HTMLSelectElement>document.getElementById("mesh-algorithm")).value);
+  
   const mesh = m.mesh_image(sizedSingleChannelImage, meshOptions);
+  meshOptions.delete();
   renderMesh(mesh);
 });
