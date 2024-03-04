@@ -5,6 +5,7 @@ const fileUpload = <HTMLInputElement>document.getElementById("image-upload");
 const meshButton = <HTMLButtonElement>document.getElementById("mesh-btn");
 const canvas = <HTMLCanvasElement>document.getElementById("postproc-area");
 const ctx = canvas.getContext("2d");
+var imageData: ImageData = null;
 
 const m : MainModule = await Module();
 fileUpload.disabled = false;
@@ -48,19 +49,21 @@ fileUpload.addEventListener("change", (e: Event) => {
   image.src = URL.createObjectURL(file);
   image.onload = () => {
     createImageBitmap(image)
-    .then( imageBitmap => ctx.drawImage(imageBitmap, 0, 0, 400, 400) )
+    .then( (imageBitmap) => {
+      ctx.drawImage(imageBitmap, 0, 0, 400, 400);
+      imageData = ctx.getImageData(0, 0, 400, 400);
+    } )
     .then( () => meshButton.disabled = false );
   }
 });
 
 meshButton.addEventListener("click", (ev: MouseEvent) => {
   const grayScaleBuffer = new Uint8Array(400 * 400);
-  const imgPixels = ctx.getImageData(0, 0, 400, 400);
-  for(var i = 0; i < imgPixels.width; ++i){
-    for(var j = 0; j < imgPixels.height; ++j){
-      var value = 0.299 * imgPixels.data[4 * i + 4 * j * imgPixels.width];
-      value += 0.587 * imgPixels.data[4 * i + 1 + 4 * j * imgPixels.width];
-      value += 0.114 * imgPixels.data[4 * i + 2 + 4 * j * imgPixels.width];
+  for(var i = 0; i < imageData.width; ++i){
+    for(var j = 0; j < imageData.height; ++j){
+      var value = 0.299 * imageData.data[4 * i + 4 * j * imageData.width];
+      value += 0.587 * imageData.data[4 * i + 1 + 4 * j * imageData.width];
+      value += 0.114 * imageData.data[4 * i + 2 + 4 * j * imageData.width];
       grayScaleBuffer[i + j * 400] = value;
     }
   }
