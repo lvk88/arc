@@ -142,7 +142,7 @@ EdgeMesh mesh_image(const SizedSingleChannelImage& img, const MeshOptions& mesh_
   // are in the order of the tag numbers
   size_t max_node_tag = 0;
   gmsh::model::mesh::getMaxNodeTag(max_node_tag);
-  std::vector<double> coords_in_tag_order(3 * max_node_tag);
+  std::vector<double> coords_in_tag_order(3 * (max_node_tag + 1));
   for(int i = 0; i < nodeTags.size(); ++i)
   {
     const auto& current_tag = nodeTags[i];
