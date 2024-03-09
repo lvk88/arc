@@ -1,6 +1,8 @@
 #pragma once
 
 #include <cstdint>
+#include <functional>
+#include <string>
 #include <vector>
 
 namespace lvk88
@@ -41,7 +43,7 @@ struct EdgeMesh
   std::vector<std::size_t> edgeNodes;
 };
 
-EdgeMesh mesh_image(const SizedSingleChannelImage& img, const MeshOptions& mesh_options);
+EdgeMesh mesh_image(const SizedSingleChannelImage& img, const MeshOptions& mesh_options, std::function<void(const std::string&)>&& log_callback);
 
 }
 }

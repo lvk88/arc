@@ -92,22 +92,28 @@ int EndPos(const char *name, PViewData *d)
 class MessageHandler : public GmshMessage
 {
   public:
-  MessageHandler() = default;
+  MessageHandler(std::function<void(const std::string&)>&& log_callback)
+  {
+    log_callback_ = log_callback;
+  }
   ~MessageHandler() = default;
 
   void operator()(std::string level, std::string message) override
   {
-    std::cout << "Got GMSH message [" << level << "]" << message << std::endl;
+    log_callback_("[" + level + "] " + message);
   }
+
+  private:
+  std::function<void(const std::string&)> log_callback_;
 };
 
 }
 
-EdgeMesh mesh_image(const SizedSingleChannelImage& img, const MeshOptions& mesh_options)
+EdgeMesh mesh_image(const SizedSingleChannelImage& img, const MeshOptions& mesh_options, std::function<void(const std::string&)>&& log_callback)
 {
   gmsh::initialize();
 
-  MessageHandler handler;
+  MessageHandler handler{std::move(log_callback)};
 
   GmshSetMessageHandler(&handler);
 

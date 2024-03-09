@@ -47,15 +47,22 @@ lvk88::arc::SizedSingleChannelImage read_lvk88(const std::string& fileName)
 
 }
 
-
 int main(int argc, char** argv)
 {
   const auto& img = read_lvk88("out.lvk88");
 
   lvk88::arc::MeshOptions default_options;
 
-  lvk88::arc::mesh_image(img, default_options);
-  lvk88::arc::mesh_image(img, default_options);
+  std::string run_name = "[FIRST_RUN]";
+  auto log_callback = [&run_name](const std::string& message)
+  {
+    std::cout << run_name << message << std::endl;
+  };
+
+  lvk88::arc::mesh_image(img, default_options, log_callback);
+
+  run_name = "[SECOND_RUN]";
+  lvk88::arc::mesh_image(img, default_options, log_callback);
 
   return 0;
 }

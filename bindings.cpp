@@ -13,6 +13,16 @@ lvk88::arc::SizedSingleChannelImage* createSizedSingleImageFromJSArray(int width
   return result;
 }
 
+lvk88::arc::EdgeMesh mesh_image(const lvk88::arc::SizedSingleChannelImage& img, const lvk88::arc::MeshOptions& mesh_options, emscripten::val js_logger_callback)
+{
+  auto cpp_logger_callback = [js_logger_callback](const std::string& log_message)
+  {
+    js_logger_callback(log_message);
+  };
+  return lvk88::arc::mesh_image(img, mesh_options, cpp_logger_callback);
+}
+
+
 EMSCRIPTEN_BINDINGS(emarclib)
 {
   emscripten::class_<lvk88::arc::SizedSingleChannelImage>("SizedSingleChannelImage")
@@ -32,7 +42,7 @@ EMSCRIPTEN_BINDINGS(emarclib)
     .property("mesh_size_min", &lvk88::arc::MeshOptions::mesh_size_min)
     .property("algorithm", &lvk88::arc::MeshOptions::algorithm);
 
-  emscripten::function("mesh_image", &lvk88::arc::mesh_image);
+  emscripten::function("mesh_image", &mesh_image);
   emscripten::register_vector<std::uint8_t>("Uint8Vector");
   emscripten::register_vector<double>("DoubleVector");
   emscripten::register_vector<std::size_t>("SizeTVector");

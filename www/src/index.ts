@@ -10,6 +10,15 @@ var imageData: ImageData = null;
 const m : MainModule = await Module();
 fileUpload.disabled = false;
 
+const logger_callback = (message: string) => {
+  const log_container = <HTMLDivElement>document.getElementById("log-container");
+  const logEntry = document.createElement("div");
+  logEntry.className = 'log-entry';
+  logEntry.textContent = message;
+  log_container.appendChild(logEntry);
+  log_container.scrollTop = log_container.scrollHeight;
+}
+
 const renderMesh = async (mesh: EdgeMesh) => {
   // Note: I keep getting OOM errors if I try to
   // use nodeCoordinates through res, e.g.:
@@ -92,7 +101,7 @@ meshButton.addEventListener("click", (ev: MouseEvent) => {
   meshOptions.mesh_size_factor = parseFloat((<HTMLInputElement>document.getElementById("mesh-length-factor")).value);
   meshOptions.algorithm = parseInt((<HTMLSelectElement>document.getElementById("mesh-algorithm")).value);
   
-  const mesh = m.mesh_image(sizedSingleChannelImage, meshOptions);
+  const mesh = m.mesh_image(sizedSingleChannelImage, meshOptions, logger_callback);
   meshOptions.delete();
   renderMesh(mesh);
 });
