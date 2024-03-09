@@ -55,6 +55,7 @@ int main(int argc, char** argv)
   lvk88::arc::MeshOptions default_options;
 
   lvk88::arc::mesh_image(img, default_options);
+  lvk88::arc::mesh_image(img, default_options);
 
   return 0;
 }

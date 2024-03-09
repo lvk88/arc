@@ -1,6 +1,8 @@
 #include "lib.hpp"
 
+#include "GmshMessage.h"
 #include "gmsh.h"
+#include "GmshGlobal.h"
 #include "PView.h"
 #include "PViewDataList.h"
 
@@ -87,11 +89,28 @@ int EndPos(const char *name, PViewData *d)
   }
 }
 
+class MessageHandler : public GmshMessage
+{
+  public:
+  MessageHandler() = default;
+  ~MessageHandler() = default;
+
+  void operator()(std::string level, std::string message) override
+  {
+    std::cout << "Got GMSH message [" << level << "]" << message << std::endl;
+  }
+};
+
 }
 
 EdgeMesh mesh_image(const SizedSingleChannelImage& img, const MeshOptions& mesh_options)
 {
   gmsh::initialize();
+
+  MessageHandler handler;
+
+  GmshSetMessageHandler(&handler);
+
   //gmsh::option::setNumber("General.Verbosity", 99);
 
   auto view_tag = EndPos("image.lvk88", Img2Data(img));
