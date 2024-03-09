@@ -50,24 +50,43 @@ fileUpload.addEventListener("change", (e: Event) => {
   image.onload = () => {
     createImageBitmap(image)
     .then( (imageBitmap) => {
-      ctx.drawImage(imageBitmap, 0, 0, 400, 400);
-      imageData = ctx.getImageData(0, 0, 400, 400);
+      // Compute aspect ratio
+      let aspectRatio = imageBitmap.width / imageBitmap.height;
+      let targetSize = 400;
+      let rescaledWidth = imageBitmap.width;
+      let rescaledHeight = imageBitmap.height;
+
+      // Find which one is the longer side
+      if(imageBitmap.width > imageBitmap.height){
+        rescaledWidth = targetSize;
+        rescaledHeight = Math.round(rescaledWidth / aspectRatio);
+      } else {
+        rescaledHeight = targetSize;
+        rescaledWidth = Math.round(rescaledHeight * aspectRatio);
+      }
+
+      canvas.style.width = rescaledWidth.toString() + "px";
+      canvas.style.height = rescaledHeight.toString() + "px";
+      canvas.width = rescaledWidth;
+      canvas.height = rescaledHeight;
+      ctx.drawImage(imageBitmap, 0, 0, rescaledWidth, rescaledHeight);
+      imageData = ctx.getImageData(0, 0, rescaledWidth, rescaledHeight);
     } )
     .then( () => meshButton.disabled = false );
   }
 });
 
 meshButton.addEventListener("click", (ev: MouseEvent) => {
-  const grayScaleBuffer = new Uint8Array(400 * 400);
-  for(var i = 0; i < imageData.width; ++i){
-    for(var j = 0; j < imageData.height; ++j){
-      var value = 0.299 * imageData.data[4 * i + 4 * j * imageData.width];
-      value += 0.587 * imageData.data[4 * i + 1 + 4 * j * imageData.width];
-      value += 0.114 * imageData.data[4 * i + 2 + 4 * j * imageData.width];
-      grayScaleBuffer[i + j * 400] = value;
+  const grayScaleBuffer = new Uint8Array(imageData.width * imageData.height);
+  for(let i = 0; i < imageData.height; ++i){
+    for(let j = 0; j < imageData.width; ++j){
+      let value = 0.299 * imageData.data[4 * j + 4 * i * imageData.width];
+      value += 0.587 * imageData.data[4 * j + 1 + 4 * i * imageData.width];
+      value += 0.114 * imageData.data[4 * j + 2 + 4 * i * imageData.width];
+      grayScaleBuffer[j + i * canvas.width] = value;
     }
   }
-  const sizedSingleChannelImage = new m.SizedSingleChannelImage(400, 400, grayScaleBuffer);
+  const sizedSingleChannelImage = new m.SizedSingleChannelImage(canvas.width, canvas.height, grayScaleBuffer);
   const meshOptions = new m.MeshOptions();
   meshOptions.mesh_size_min = parseFloat((<HTMLInputElement>document.getElementById("mesh-min-length")).value);
   meshOptions.mesh_size_factor = parseFloat((<HTMLInputElement>document.getElementById("mesh-length-factor")).value);

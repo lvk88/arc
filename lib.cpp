@@ -18,8 +18,8 @@ namespace
 PViewDataList *Img2Data(const SizedSingleChannelImage& customImage)
 {
   const unsigned char *data = customImage.data.data();
-  int height = customImage.width;
-  int width = customImage.height;
+  int width = customImage.width;
+  int height = customImage.height;
 
   PViewDataList *d = new PViewDataList();
 
