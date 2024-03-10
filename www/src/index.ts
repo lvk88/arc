@@ -30,11 +30,11 @@ gmshWorker.addEventListener("message", (ev: MessageEvent<Message>) => {
     });
 
     ctx.stroke(path);
+    meshButton.disabled = false;
   }
 });
 
 const m : MainModule = await Module();
-//fileUpload.disabled = false;
 
 const logger_callback = (message: string) => {
   const log_container = <HTMLDivElement>document.getElementById("log-container");
@@ -43,37 +43,6 @@ const logger_callback = (message: string) => {
   logEntry.textContent = message;
   log_container.appendChild(logEntry);
   log_container.scrollTop = log_container.scrollHeight;
-}
-
-const renderMesh = async (mesh: EdgeMesh) => {
-  // Note: I keep getting OOM errors if I try to
-  // use nodeCoordinates through res, e.g.:
-  // const x = res.nodeCoordinates.get(i)
-  const nodeCoordinates = mesh.nodeCoordinates;
-  const edgeNodes = mesh.edgeNodes;
-  ctx.lineWidth = 0.5;
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  const path = new Path2D();
-
-  for(var i = 0; i < edgeNodes.size(); i += 2){
-    const node_0 = edgeNodes.get(i);
-    const node_1 = edgeNodes.get(i + 1);
-
-    const x_0 = nodeCoordinates.get(3 * node_0);
-    const y_0 = nodeCoordinates.get(3 * node_0 + 1);
-
-    path.moveTo(x_0, canvas.height - y_0);
-
-    const x_1 = nodeCoordinates.get(3 * node_1);
-    const y_1 = nodeCoordinates.get(3 * node_1 + 1);
-
-    path.lineTo(x_1, canvas.height - y_1);
-  }
-  ctx.stroke(path);
-  edgeNodes.delete();
-  nodeCoordinates.delete();
-  mesh.delete();
 }
 
 fileUpload.addEventListener("change", (e: Event) => {
@@ -123,4 +92,5 @@ meshButton.addEventListener("click", (ev: MouseEvent) => {
         mesh_size_factor: mesh_size_factor,
         mesh_algorithm: algorithm
       }});
+  meshButton.disabled = true;
 });
