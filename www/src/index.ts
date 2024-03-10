@@ -7,6 +7,15 @@ const canvas = <HTMLCanvasElement>document.getElementById("postproc-area");
 const ctx = canvas.getContext("2d");
 var imageData: ImageData = null;
 
+const gmshWorker = new Worker(
+  // @ts-ignore
+  new URL('./gmshworker.ts', import.meta.url)
+);
+
+gmshWorker.addEventListener("message", (ev: MessageEvent) => {
+  logger_callback(ev.data);
+});
+
 const m : MainModule = await Module();
 fileUpload.disabled = false;
 
