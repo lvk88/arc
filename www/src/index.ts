@@ -1,5 +1,6 @@
 import Module from "emarclib";
 import { MainModule, EdgeMesh } from "emarclib-types";
+import { Message, MeshInputPayload, CopyableEdgeMesh } from "./message";
 
 const fileUpload = <HTMLInputElement>document.getElementById("image-upload");
 const meshButton = <HTMLButtonElement>document.getElementById("mesh-btn");
@@ -12,12 +13,28 @@ const gmshWorker = new Worker(
   new URL('./gmshworker.ts', import.meta.url)
 );
 
-gmshWorker.addEventListener("message", (ev: MessageEvent) => {
-  logger_callback(ev.data);
+gmshWorker.addEventListener("message", (ev: MessageEvent<Message>) => {
+  logger_callback("[gmshWorker]" + ev.data.message.toString());
+  if(ev.data.message == "gmshReady"){
+    fileUpload.disabled = false;
+  }
+  else if(ev.data.message == "path2DReady"){
+    ctx.lineWidth = 0.5;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const copyableEdgeMesh = ev.data.payload as CopyableEdgeMesh;
+
+    const path = new Path2D();
+    copyableEdgeMesh.edgeSoup.forEach((edge) => {
+      path.moveTo(edge.p0.x, edge.p0.y);
+      path.lineTo(edge.p1.x, edge.p1.y);
+    });
+
+    ctx.stroke(path);
+  }
 });
 
 const m : MainModule = await Module();
-fileUpload.disabled = false;
+//fileUpload.disabled = false;
 
 const logger_callback = (message: string) => {
   const log_container = <HTMLDivElement>document.getElementById("log-container");
@@ -95,22 +112,15 @@ fileUpload.addEventListener("change", (e: Event) => {
 });
 
 meshButton.addEventListener("click", (ev: MouseEvent) => {
-  const grayScaleBuffer = new Uint8Array(imageData.width * imageData.height);
-  for(let i = 0; i < imageData.height; ++i){
-    for(let j = 0; j < imageData.width; ++j){
-      let value = 0.299 * imageData.data[4 * j + 4 * i * imageData.width];
-      value += 0.587 * imageData.data[4 * j + 1 + 4 * i * imageData.width];
-      value += 0.114 * imageData.data[4 * j + 2 + 4 * i * imageData.width];
-      grayScaleBuffer[j + i * canvas.width] = value;
-    }
-  }
-  const sizedSingleChannelImage = new m.SizedSingleChannelImage(canvas.width, canvas.height, grayScaleBuffer);
-  const meshOptions = new m.MeshOptions();
-  meshOptions.mesh_size_min = parseFloat((<HTMLInputElement>document.getElementById("mesh-min-length")).value);
-  meshOptions.mesh_size_factor = parseFloat((<HTMLInputElement>document.getElementById("mesh-length-factor")).value);
-  meshOptions.algorithm = parseInt((<HTMLSelectElement>document.getElementById("mesh-algorithm")).value);
-  
-  const mesh = m.mesh_image(sizedSingleChannelImage, meshOptions, logger_callback);
-  meshOptions.delete();
-  renderMesh(mesh);
+  const  mesh_size_min = parseFloat((<HTMLInputElement>document.getElementById("mesh-min-length")).value);
+  const mesh_size_factor = parseFloat((<HTMLInputElement>document.getElementById("mesh-length-factor")).value);
+  const algorithm = parseInt((<HTMLSelectElement>document.getElementById("mesh-algorithm")).value);
+  gmshWorker.postMessage({
+      message: "generateMesh",
+      payload: {
+        imageData: imageData,
+        mesh_size_min: mesh_size_min,
+        mesh_size_factor: mesh_size_factor,
+        mesh_algorithm: algorithm
+      }});
 });
