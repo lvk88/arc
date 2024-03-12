@@ -3,3 +3,4 @@
 .clangd
 pkg/*
 !pkg/.gitkeep
+build/
