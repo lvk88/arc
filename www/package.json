@@ -10,7 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "emarclib": "file:../pkg"
+    "emarclib": "file:../pkg",
+    "onnxruntime-web": "^1.17.1"
   },
   "devDependencies": {
     "@types/emscripten": "^1.39.10",

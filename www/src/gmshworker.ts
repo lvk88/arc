@@ -45,9 +45,12 @@ const meshThenCreatePath2D = (meshInput: MeshInputPayload) => {
   const grayScaleBuffer = new Uint8Array(imageData.width * imageData.height);
   for(let i = 0; i < imageData.height; ++i){
     for(let j = 0; j < imageData.width; ++j){
-      let value = 0.299 * imageData.data[4 * j + 4 * i * imageData.width];
-      value += 0.587 * imageData.data[4 * j + 1 + 4 * i * imageData.width];
-      value += 0.114 * imageData.data[4 * j + 2 + 4 * i * imageData.width];
+      let value = 255;
+      if(imageData.data[4 * j + 4 * i * imageData.width + 3] > 127){
+        value = 0.299 * imageData.data[4 * j + 4 * i * imageData.width];
+        value += 0.587 * imageData.data[4 * j + 1 + 4 * i * imageData.width];
+        value += 0.114 * imageData.data[4 * j + 2 + 4 * i * imageData.width];
+      }
       grayScaleBuffer[j + i * imageData.width] = value;
     }
   }

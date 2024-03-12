@@ -4,6 +4,7 @@ import { Message, MeshInputPayload, CopyableEdgeMesh } from "./message";
 
 const fileUpload = <HTMLInputElement>document.getElementById("image-upload");
 const meshButton = <HTMLButtonElement>document.getElementById("mesh-btn");
+const removeBgButton = <HTMLButtonElement>document.getElementById("remove-bg-btn");
 const canvas = <HTMLCanvasElement>document.getElementById("postproc-area");
 const ctx = canvas.getContext("2d");
 var imageData: ImageData = null;
@@ -31,6 +32,18 @@ gmshWorker.addEventListener("message", (ev: MessageEvent<Message>) => {
 
     ctx.stroke(path);
     meshButton.disabled = false;
+  }
+});
+
+const u2netWorker = new Worker(
+  // @ts-ignore
+  new URL('./u2networker.ts', import.meta.url)
+);
+
+u2netWorker.addEventListener("message", (ev: MessageEvent<Message>) => {
+  logger_callback("[u2netWorker]" + ev.data.message);
+  if(ev.data.message == "maskReady"){
+    const bitmap = createImageBitmap(ev.data.payload as ImageData).then((bitmap => ctx.drawImage(bitmap, 0, 0)));
   }
 });
 
@@ -76,7 +89,10 @@ fileUpload.addEventListener("change", (e: Event) => {
       ctx.drawImage(imageBitmap, 0, 0, rescaledWidth, rescaledHeight);
       imageData = ctx.getImageData(0, 0, rescaledWidth, rescaledHeight);
     } )
-    .then( () => meshButton.disabled = false );
+    .then( () => {
+      meshButton.disabled = false;
+      removeBgButton.disabled = false;
+    }  );
   }
 });
 
@@ -93,4 +109,11 @@ meshButton.addEventListener("click", (ev: MouseEvent) => {
         mesh_algorithm: algorithm
       }});
   meshButton.disabled = true;
+});
+
+removeBgButton.addEventListener("click", (ev) => {
+  u2netWorker.postMessage({
+    message: "removeBackground",
+    payload: imageData
+  });
 });

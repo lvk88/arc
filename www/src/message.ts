@@ -23,5 +23,5 @@ export type CopyableEdgeMesh = {
 
 export interface Message {
   message: string,
-  payload: MeshInputPayload | CopyableEdgeMesh;
+  payload: MeshInputPayload | CopyableEdgeMesh | ImageData | null;
 };

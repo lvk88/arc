@@ -7,7 +7,7 @@ module.exports = {
   entry: './src/bootstrap.ts',
   devtool: 'source-map',
   performance: {
-    maxAssetSize: 10485760,
+    maxAssetSize: 20971520,
   },
   module: {
     rules: [
@@ -27,6 +27,11 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'),
   },
   mode: 'production',
+  devServer: {
+    devMiddleware: {
+      writeToDisk: true
+    }
+  },
   plugins: [
     new CopyWebpackPlugin({
       patterns: [
@@ -37,6 +42,14 @@ module.exports = {
         {
           from: "../data/out.lvk88",
           to: "out.lvk88"
+        },
+        {
+          from: "../data/u2netp.onnx",
+          to: "u2netp.onnx"
+        },
+        {
+          from: "node_modules/onnxruntime-web/dist/*.wasm",
+          to: "./[name][ext]"
         }
       ],
     }),
