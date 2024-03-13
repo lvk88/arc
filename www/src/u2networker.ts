@@ -56,7 +56,7 @@ addEventListener("message", async (ev: MessageEvent<Message>)  => {
 
         for (let i = 0; i < inputImage.height; ++i) {
             for (let j = 0; j < inputImage.width; ++j) {
-                if(resizedMaskBitmap.data[4 * i * resizedMaskBitmap.width + 4 * j] < 250){
+                if(resizedMaskBitmap.data[4 * i * resizedMaskBitmap.width + 4 * j] < 127){
                     inputImage.data[4 * i * resizedMaskBitmap.width + 4 * j] = 255;
                     inputImage.data[4 * i * resizedMaskBitmap.width + 4 * j + 1] = 255;
                     inputImage.data[4 * i * resizedMaskBitmap.width + 4 * j + 2] = 255;

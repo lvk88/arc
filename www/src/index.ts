@@ -42,8 +42,11 @@ const u2netWorker = new Worker(
 
 u2netWorker.addEventListener("message", (ev: MessageEvent<Message>) => {
   logger_callback("[u2netWorker]" + ev.data.message);
-  if(ev.data.message == "maskReady"){
-    const bitmap = createImageBitmap(ev.data.payload as ImageData).then((bitmap => ctx.drawImage(bitmap, 0, 0)));
+  if (ev.data.message == "maskReady") {
+    const bitmap = createImageBitmap(ev.data.payload as ImageData).then((bitmap) => {
+      ctx.drawImage(bitmap, 0, 0);
+      imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    });
   }
 });
 
