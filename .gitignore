@@ -4,3 +4,4 @@
 pkg/*
 !pkg/.gitkeep
 build/
+data/u2netp.onnx
