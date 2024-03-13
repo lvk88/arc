@@ -32,6 +32,7 @@ gmshWorker.addEventListener("message", (ev: MessageEvent<Message>) => {
 
     ctx.stroke(path);
     meshButton.disabled = false;
+    removeBgButton.disabled = false;
   }
 });
 
@@ -46,11 +47,11 @@ u2netWorker.addEventListener("message", (ev: MessageEvent<Message>) => {
     const bitmap = createImageBitmap(ev.data.payload as ImageData).then((bitmap) => {
       ctx.drawImage(bitmap, 0, 0);
       imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      meshButton.disabled = false;
+      removeBgButton.disabled = false;
     });
   }
 });
-
-const m : MainModule = await Module();
 
 const logger_callback = (message: string) => {
   const log_container = <HTMLDivElement>document.getElementById("log-container");
@@ -112,6 +113,7 @@ meshButton.addEventListener("click", (ev: MouseEvent) => {
         mesh_algorithm: algorithm
       }});
   meshButton.disabled = true;
+  removeBgButton.disabled = true;
 });
 
 removeBgButton.addEventListener("click", (ev) => {
@@ -119,4 +121,6 @@ removeBgButton.addEventListener("click", (ev) => {
     message: "removeBackground",
     payload: imageData
   });
+  meshButton.disabled = true;
+  removeBgButton.disabled = true;
 });
