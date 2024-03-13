@@ -3,10 +3,13 @@ import { Message } from './message';
 
 addEventListener("message", async (ev: MessageEvent<Message>)  => {
     if(ev.data.message == "removeBackground"){
+        postMessage({message:"Starting background removal", payload: null});
+        postMessage({message:"Creating onnx session", payload: null});
         const session = await ort.InferenceSession.create("./u2netp.onnx");
         const inputImage = ev.data.payload as ImageData;
 
         // Resize input image to 320 x 320
+        postMessage({message:"Converting image to tensor", payload: null});
         var offscreenCanvas = new OffscreenCanvas(320, 320);
         var offsreenContext = offscreenCanvas.getContext("2d");
         const imageBitmap = await createImageBitmap(inputImage);
@@ -34,9 +37,13 @@ addEventListener("message", async (ev: MessageEvent<Message>)  => {
         // Computed property name
         const input = {[inputName]: inputTensor};
 
+        postMessage({message:"Starting inference", payload: null});
         const result = await session.run(input, [outputName]);
+        postMessage({message:"Inference done", payload: null});
+
         const mask = result[1959].data as Float32Array;
 
+        postMessage({message:"Retrieving mask", payload: null});
         const maskImage = new ImageData(320, 320);
         for (let i = 0; i < 320; ++i) {
             for (let j = 0; j < 320; ++j) {
@@ -47,6 +54,7 @@ addEventListener("message", async (ev: MessageEvent<Message>)  => {
             }
         }
 
+        postMessage({message:"Resizing mask", payload: null});
         const maskBitmap = await createImageBitmap(maskImage);
         offsreenContext.reset();
         offscreenCanvas.width = inputImage.width;
