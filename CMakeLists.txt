@@ -93,6 +93,15 @@ add_custom_command(TARGET main
   COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/data/out.lvk88 ${CMAKE_BINARY_DIR})
 
 IF(EMSCRIPTEN)
+
+  # Download u2netp
+  if(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/data/u2netp.onnx)
+    MESSAGE(STATUS "Downloading u2netp.onnx...")
+    file(DOWNLOAD https://github.com/danielgatis/rembg/releases/download/v0.0.0/u2netp.onnx ${CMAKE_CURRENT_SOURCE_DIR}/data/u2netp.onnx)
+  else()
+    MESSAGE(STATUS "u2netp.onnx found in data folder")
+  endif()
+
   set_target_properties(main
     PROPERTIES
     SUFFIX ".html"
