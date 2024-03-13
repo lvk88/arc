@@ -27,11 +27,6 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'),
   },
   mode: 'production',
-  devServer: {
-    devMiddleware: {
-      writeToDisk: true
-    }
-  },
   plugins: [
     new CopyWebpackPlugin({
       patterns: [
