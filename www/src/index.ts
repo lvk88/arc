@@ -1,6 +1,5 @@
-import Module from "emarclib";
-import { MainModule, EdgeMesh } from "emarclib-types";
 import { Message, MeshInputPayload, CopyableEdgeMesh } from "./message";
+import './styles.css';
 
 const fileUpload = <HTMLInputElement>document.getElementById("image-upload");
 const meshButton = <HTMLButtonElement>document.getElementById("mesh-btn");
