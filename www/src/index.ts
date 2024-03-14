@@ -6,7 +6,36 @@ const meshButton = <HTMLButtonElement>document.getElementById("mesh-btn");
 const removeBgButton = <HTMLButtonElement>document.getElementById("remove-bg-btn");
 const canvas = <HTMLCanvasElement>document.getElementById("postproc-area");
 const ctx = canvas.getContext("2d");
+const imageDropArea = <HTMLDivElement>document.getElementById("imageDropArea");
 var imageData: ImageData = null;
+
+
+// Set up image drop area
+["dragenter", "dragover"].forEach(eventName => {
+  imageDropArea.addEventListener(eventName, (ev: Event) => {
+    imageDropArea.classList.add("highlight")
+    ev.preventDefault();
+  }, false);
+});
+
+["dragleave"].forEach(eventName => {
+  imageDropArea.addEventListener(eventName, (ev) => {
+    imageDropArea.classList.remove("highlight");
+    ev.preventDefault();
+  });
+});
+
+imageDropArea.addEventListener('drop', (ev: DragEvent) => {
+  imageDropArea.classList.remove("highlight");
+  ev.preventDefault();
+  const dt = ev.dataTransfer;
+  const files = dt.files;
+  const file = files[0];
+  if(!file.type.includes('image')){
+    console.log("Got file which is not image, skipping...");
+  }
+  onNewImage(file);
+});
 
 const gmshWorker = new Worker(
   // @ts-ignore
@@ -61,10 +90,7 @@ const logger_callback = (message: string) => {
   log_container.scrollTop = log_container.scrollHeight;
 }
 
-fileUpload.addEventListener("change", (e: Event) => {
-  const files = fileUpload.files;
-  if(files.length == 0) return;
-  const file = files[0];
+const onNewImage = (file: File) => {
   const image = new Image();
   image.src = URL.createObjectURL(file);
   image.onload = () => {
@@ -97,6 +123,13 @@ fileUpload.addEventListener("change", (e: Event) => {
       removeBgButton.disabled = false;
     }  );
   }
+};
+
+fileUpload.addEventListener("change", (e: Event) => {
+  const files = fileUpload.files;
+  if(files.length == 0) return;
+  const file = files[0];
+  onNewImage(file);
 });
 
 meshButton.addEventListener("click", (ev: MouseEvent) => {

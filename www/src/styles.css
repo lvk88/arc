@@ -13,3 +13,27 @@
     padding: 5px;
     border-bottom: 1px solid #ddd;
 }
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 400px;
+    height: 400px;
+}
+
+.image-drop-area {
+    border: 2px dashed #ccc;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.image-drop-area span {
+    display: block;
+    color: #666;
+}
+
+.highlight {
+    background-color: lightgray;
+}
