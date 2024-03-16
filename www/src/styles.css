@@ -1,10 +1,16 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    overflow: hidden; 
+    height: 100%;
+}
+
 #log-container {
     max-height: 300px;
     overflow-y: auto;
     border: 1px solid #ccc;
     padding: 10px;
     font-family: monospace;
-    width: 400px;
 }
 
 .log-entry {
@@ -14,12 +20,19 @@
     border-bottom: 1px solid #ddd;
 }
 
-.container {
+.ui-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 800px;
+}
+
+#canvasContainer {
     display: flex;
     justify-content: center;
     align-items: center;
     width: 400px;
-    height: 400px;
+    z-index: 0;
 }
 
 .image-drop-area {
@@ -27,6 +40,7 @@
     padding: 20px;
     text-align: center;
     cursor: pointer;
+    position: absolute;
 }
 
 .image-drop-area span {
@@ -36,4 +50,12 @@
 
 .highlight {
     background-color: lightgray;
+}
+
+#postproc-area {
+    visibility: hidden;
+}
+
+#image-upload {
+    display: none;
 }

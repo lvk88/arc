@@ -37,6 +37,10 @@ imageDropArea.addEventListener('drop', (ev: DragEvent) => {
   onNewImage(file);
 });
 
+imageDropArea.addEventListener('click', (ev: MouseEvent) => {
+ fileUpload.click();
+});
+
 const gmshWorker = new Worker(
   // @ts-ignore
   new URL('./gmshworker.ts', import.meta.url)
@@ -117,6 +121,8 @@ const onNewImage = (file: File) => {
       canvas.height = rescaledHeight;
       ctx.drawImage(imageBitmap, 0, 0, rescaledWidth, rescaledHeight);
       imageData = ctx.getImageData(0, 0, rescaledWidth, rescaledHeight);
+      canvas.style.visibility = "visible";
+      imageDropArea.style.visibility = "hidden";
     } )
     .then( () => {
       meshButton.disabled = false;
