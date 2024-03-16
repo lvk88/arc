@@ -139,14 +139,13 @@ fileUpload.addEventListener("change", (e: Event) => {
 });
 
 meshButton.addEventListener("click", (ev: MouseEvent) => {
-  const  mesh_size_min = parseFloat((<HTMLInputElement>document.getElementById("mesh-min-length")).value);
   const mesh_size_factor = parseFloat((<HTMLInputElement>document.getElementById("mesh-length-factor")).value);
   const algorithm = parseInt((<HTMLSelectElement>document.getElementById("mesh-algorithm")).value);
   gmshWorker.postMessage({
       message: "generateMesh",
       payload: {
         imageData: imageData,
-        mesh_size_min: mesh_size_min,
+        mesh_size_min: 0.0,
         mesh_size_factor: mesh_size_factor,
         mesh_algorithm: algorithm
       }});
