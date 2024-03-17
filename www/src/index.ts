@@ -4,6 +4,7 @@ import './styles.css';
 const fileUpload = <HTMLInputElement>document.getElementById("image-upload");
 const meshButton = <HTMLButtonElement>document.getElementById("mesh-btn");
 const removeBgButton = <HTMLButtonElement>document.getElementById("remove-bg-btn");
+const canvasContainer = <HTMLDivElement>document.getElementById("canvasContainer");
 const canvas = <HTMLCanvasElement>document.getElementById("postproc-area");
 const ctx = canvas.getContext("2d");
 const imageDropArea = <HTMLDivElement>document.getElementById("imageDropArea");
@@ -102,25 +103,35 @@ const onNewImage = (file: File) => {
     .then( (imageBitmap) => {
       // Compute aspect ratio
       let aspectRatio = imageBitmap.width / imageBitmap.height;
-      let targetSize = 400;
+      let targetHeight = canvasContainer.clientHeight;
+      let targetWidth = canvasContainer.clientWidth;
+      let targetCanvasSize = 400;
       let rescaledWidth = imageBitmap.width;
       let rescaledHeight = imageBitmap.height;
+      let canvasWidth = 400;
+      let canvasHeight = 400;
 
       // Find which one is the longer side
       if(imageBitmap.width > imageBitmap.height){
-        rescaledWidth = targetSize;
+        rescaledWidth = targetWidth;
         rescaledHeight = Math.round(rescaledWidth / aspectRatio);
+        canvasWidth = targetCanvasSize;
+        canvasHeight = Math.round(canvasWidth / aspectRatio);
       } else {
-        rescaledHeight = targetSize;
+        rescaledHeight = targetHeight;
         rescaledWidth = Math.round(rescaledHeight * aspectRatio);
+        canvasHeight = targetCanvasSize;
+        canvasWidth = Math.round(canvasHeight * aspectRatio);
       }
 
       canvas.style.width = rescaledWidth.toString() + "px";
       canvas.style.height = rescaledHeight.toString() + "px";
-      canvas.width = rescaledWidth;
-      canvas.height = rescaledHeight;
-      ctx.drawImage(imageBitmap, 0, 0, rescaledWidth, rescaledHeight);
-      imageData = ctx.getImageData(0, 0, rescaledWidth, rescaledHeight);
+
+      // The width and height of the canvas should be 
+      canvas.width = canvasWidth;
+      canvas.height = canvasHeight;
+      ctx.drawImage(imageBitmap, 0, 0, canvasWidth, canvasHeight);
+      imageData = ctx.getImageData(0, 0, canvasWidth, canvasHeight);
       canvas.style.visibility = "visible";
       imageDropArea.style.visibility = "hidden";
     } )

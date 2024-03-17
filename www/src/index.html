@@ -14,19 +14,15 @@
         <input type="file" accept="image/*" id="image-upload" disabled />
       </div>
       <div class="ui-control-row">
-        <div>
-          <button id="remove-bg-btn" disabled>Remove background</button>
-        </div>
-        <div>
-          <button id="mesh-btn" disabled>Generate mesh</button>
-        </div>
+          <button class="btn" id="remove-bg-btn" disabled><span>Remove Background</span></button>
+          <button class="btn" id="mesh-btn" disabled><span>Generate Mesh</span></button>
       </div>
       <div class="ui-control-row">
-        <div>
-          <input type="range" id="mesh-length-factor" min="0.1" max="10" step="0.1" value="1">
+        <div class="labeled-slider">
+          <input type="range" id="mesh-length-factor" min="0.5" max="3" step="0.1" value="1">
         </div>
-        <div>
-          <select id="mesh-algorithm">
+        <div class="select-dropdown">
+          <select id="mesh-algorithm" style="width: 100%">
             <option value="1">MeshAdapt</option>
             <option value="2">Automatic</option>
             <option value="5">Delaunay</option>
@@ -37,7 +33,7 @@
       </div>
     </div>
     <div id="canvasContainer">
-      <canvas id="postproc-area" width="400" height="400">
+      <canvas id="postproc-area">
       </canvas>
       <div class="image-drop-area" id="imageDropArea">
         <span>Drag and drop image or click to upload</span>
