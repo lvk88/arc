@@ -29,7 +29,7 @@ body, html {
 }
 
 .image-drop-area {
-    border: 2px dashed #ccc;
+    border: 2px dashed #75c4c1;
     padding: 20px;
     text-align: center;
     cursor: pointer;
@@ -38,7 +38,7 @@ body, html {
 
 .image-drop-area span {
     display: block;
-    color: #666;
+    color: #18807b;
 }
 
 .highlight {
@@ -57,7 +57,7 @@ body, html {
     height: 48px;
     max-height: 48px;
     overflow-y: auto;
-    border: 1px solid #ccc;
+    border: 1px solid #c4e6e4;
     padding: 0px;
     font-family: monospace;
 }
@@ -66,7 +66,7 @@ body, html {
     white-space: pre-wrap;
     margin: 0;
     padding: 5px;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid #c4e6e4;
 }
 .btn {
     position: relative;
@@ -83,7 +83,7 @@ body, html {
     box-shadow: 0 1px 4px rgba(0, 0, 0, .6);
     
     background-color: #3aaba6;
-    color: #ecf0f1;
+    color: #e7f5f4;
     
     transition: background-color .3s;
   }
