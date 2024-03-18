@@ -3,6 +3,7 @@ body, html {
     padding: 0;
     overflow: hidden; 
     height: 100%;
+    font-family: 'Work Sans';
 }
 
 .ui-container {
@@ -70,6 +71,9 @@ body, html {
 }
 .btn {
     position: relative;
+    font-weight: bold;
+
+    margin: 5px 1px;
   
     display: block;
     padding: 0;
@@ -80,7 +84,6 @@ body, html {
     border-width: 0;
     outline: none;
     border-radius: 2px;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, .6);
     
     background-color: #3aaba6;
     color: #e7f5f4;
@@ -89,7 +92,7 @@ body, html {
   }
   
   .btn:hover, .btn:focus {
-    background-color: #27ae60;
+    background-color: #75c4c1;
   }
   
   .btn > * {
@@ -133,6 +136,7 @@ body, html {
   .labeled-slider {
     flex: 1;
     display: flex;
+    margin: 5px 5px;
   }
 
   .labeled-slider input {
@@ -140,5 +144,45 @@ body, html {
   }
 
   .select-dropdown {
-    flex: 1
+    flex: 1;
+    margin: 5px 5px;
+  }
+
+  .dark-bg {
+    background-color: #e7f5f4;
+  }
+
+  .slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 25px;
+    background: #c4e6e4;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+  }
+  
+  .slider:hover {
+    opacity: 1;
+  }
+  
+  .slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 25px;
+    height: 25px;
+    background: #3aaba6;
+    cursor: pointer;
+    border-radius: 0;
+    border: none;
+  }
+  
+  .slider::-moz-range-thumb {
+    width: 25px;
+    height: 25px;
+    background: #3aaba6;
+    cursor: pointer;
+    border-radius: 0;
+    border: none;
   }
