@@ -4,6 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href='https://fonts.googleapis.com/css?family=Work Sans' rel='stylesheet'>
   <title>Arc by kude.la</title>
 </head>
 
@@ -13,13 +14,15 @@
       <div>
         <input type="file" accept="image/*" id="image-upload" disabled />
       </div>
-      <div class="ui-control-row">
+      <div class="ui-control-row dark-bg">
           <button class="btn" id="remove-bg-btn" disabled><span>Remove Background</span></button>
           <button class="btn" id="mesh-btn" disabled><span>Generate Mesh</span></button>
+          <button class="btn" id="export-btn" disabled><span>Export SVG</span></button>
+          <button class="btn" id="reset-btn"><span>Reset</span></button>
       </div>
-      <div class="ui-control-row">
+      <div class="ui-control-row dark-bg">
         <div class="labeled-slider">
-          <input type="range" id="mesh-length-factor" min="0.5" max="3" step="0.1" value="1">
+          <input type="range" class="slider" id="mesh-length-factor" min="0.5" max="3" step="0.1" value="1">
         </div>
         <div class="select-dropdown">
           <select id="mesh-algorithm" style="width: 100%">

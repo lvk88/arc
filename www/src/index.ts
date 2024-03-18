@@ -4,6 +4,7 @@ import './styles.css';
 const fileUpload = <HTMLInputElement>document.getElementById("image-upload");
 const meshButton = <HTMLButtonElement>document.getElementById("mesh-btn");
 const removeBgButton = <HTMLButtonElement>document.getElementById("remove-bg-btn");
+const resetButton = <HTMLButtonElement>document.getElementById("reset-btn");
 const canvasContainer = <HTMLDivElement>document.getElementById("canvasContainer");
 const canvas = <HTMLCanvasElement>document.getElementById("postproc-area");
 const ctx = canvas.getContext("2d");
@@ -171,4 +172,12 @@ removeBgButton.addEventListener("click", (ev) => {
   });
   meshButton.disabled = true;
   removeBgButton.disabled = true;
+});
+
+resetButton.addEventListener("click", (ev: MouseEvent) => {
+  meshButton.disabled = true;
+  removeBgButton.disabled = true;
+  imageData = null;
+  canvas.style.visibility = "hidden";
+  imageDropArea.style.visibility = "visible";
 });
