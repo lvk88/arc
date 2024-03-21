@@ -18,6 +18,8 @@ const createCopyableEdgeMesh = (mesh: EdgeMesh, height: number) => {
 
   const resultEdgeSoup = new Array<Edge2D>();
 
+  let svgString = "";
+
   for(var i = 0; i < edgeNodes.size(); i += 2){
     const node_0 = edgeNodes.get(i);
     const node_1 = edgeNodes.get(i + 1);
@@ -33,11 +35,12 @@ const createCopyableEdgeMesh = (mesh: EdgeMesh, height: number) => {
     const p1 = {x: x_1, y: height - y_1};
 
     resultEdgeSoup.push({p0: p0, p1: p1});
+    svgString += "M" + p0.x.toString() + " " + p0.y.toString() + " " + "L" + p1.x.toString() + " " + p1.y.toString();
   }
   edgeNodes.delete();
   nodeCoordinates.delete();
   mesh.delete();
-  return {edgeSoup: resultEdgeSoup};
+  return {edgeSoup: resultEdgeSoup, svgString: svgString};
 }
 
 const meshThenCreatePath2D = (meshInput: MeshInputPayload) => {

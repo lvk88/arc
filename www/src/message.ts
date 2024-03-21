@@ -18,7 +18,8 @@ export type Edge2D = {
 };
 
 export type CopyableEdgeMesh = {
-  edgeSoup: Array<Edge2D>
+  edgeSoup: Array<Edge2D>,
+  svgString: string
 };
 
 export interface Message {

@@ -1,14 +1,17 @@
 import { Message, MeshInputPayload, CopyableEdgeMesh } from "./message";
 import './styles.css';
+import { SVG } from "@svgdotjs/svg.js";
 
 const fileUpload = <HTMLInputElement>document.getElementById("image-upload");
 const meshButton = <HTMLButtonElement>document.getElementById("mesh-btn");
 const removeBgButton = <HTMLButtonElement>document.getElementById("remove-bg-btn");
 const resetButton = <HTMLButtonElement>document.getElementById("reset-btn");
+const exportButton = <HTMLButtonElement>document.getElementById("export-btn");
 const canvasContainer = <HTMLDivElement>document.getElementById("canvasContainer");
 const canvas = <HTMLCanvasElement>document.getElementById("postproc-area");
 const ctx = canvas.getContext("2d");
 const imageDropArea = <HTMLDivElement>document.getElementById("imageDropArea");
+let svgString: string = null;
 var imageData: ImageData = null;
 
 
@@ -58,11 +61,9 @@ gmshWorker.addEventListener("message", (ev: MessageEvent<Message>) => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     const copyableEdgeMesh = ev.data.payload as CopyableEdgeMesh;
 
-    const path = new Path2D();
-    copyableEdgeMesh.edgeSoup.forEach((edge) => {
-      path.moveTo(edge.p0.x, edge.p0.y);
-      path.lineTo(edge.p1.x, edge.p1.y);
-    });
+    svgString = copyableEdgeMesh.svgString;
+
+    const path = new Path2D(svgString);
 
     ctx.stroke(path);
     meshButton.disabled = false;
@@ -178,6 +179,23 @@ resetButton.addEventListener("click", (ev: MouseEvent) => {
   meshButton.disabled = true;
   removeBgButton.disabled = true;
   imageData = null;
+  svgString = null;
   canvas.style.visibility = "hidden";
   imageDropArea.style.visibility = "visible";
+});
+
+exportButton.addEventListener("click", (ev: MouseEvent) =>{
+  if(svgString == null){
+    return;
+  }
+
+  let svg = SVG();
+  svg.size(canvas.width, canvas.height);
+  svg.path(svgString).fill('none').stroke({color: '#000', width: 0.5});
+  const file = svg.svg();
+  const blob = new Blob([file], { type: "image/svg+xml"});
+  const link = document.createElement("a");
+  link.download = "mesh.svg";
+  link.href = URL.createObjectURL(blob);
+  link.click();
 });
