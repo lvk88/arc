@@ -227,3 +227,7 @@ body, html {
     font-size: smaller;
     color: #18807b;
   }
+
+  .horizontal-button-container{
+    display: flex;
+  }
