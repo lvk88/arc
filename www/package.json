@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@svgdotjs/svg.js": "^3.2.0",
     "emarclib": "file:../pkg",
     "onnxruntime-web": "^1.17.1"
   },
