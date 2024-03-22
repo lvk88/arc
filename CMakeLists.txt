@@ -64,8 +64,8 @@ FetchContent_GetProperties(gmsh
   BINARY_DIR GMSH_BINARY_DIR
   )
 
-add_library(arclib lib.cpp)
-add_executable(main main.cpp)
+add_library(arclib ${CMAKE_CURRENT_SOURCE_DIR}/cpp/lib.cpp)
+add_executable(main ${CMAKE_CURRENT_SOURCE_DIR}/cpp/main.cpp)
 
 # This is not very elegant, but gmsh is not yet using
 # target_include_directories syntax yet, so the required include folders are
@@ -112,7 +112,7 @@ IF(EMSCRIPTEN)
     -sINITIAL_MEMORY=67108864
     --preload-file ${CMAKE_SOURCE_DIR}/data/out.lvk88@out.lvk88)
 
-  add_executable(emarclib bindings.cpp)
+  add_executable(emarclib ${CMAKE_CURRENT_SOURCE_DIR}/cpp/bindings.cpp)
   target_link_libraries(emarclib PUBLIC arclib)
   target_link_options(emarclib PUBLIC 
     -lembind
@@ -121,8 +121,6 @@ IF(EMSCRIPTEN)
     -sMODULARIZE=1
     -sEXPORT_ES6=1
     -sENVIRONMENT='web'
-    -sNO_DISABLE_EXCEPTION_CATCHING
-    -sASSERTIONS=1
     )
 
   set_target_properties(emarclib
