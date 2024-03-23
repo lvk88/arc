@@ -49,6 +49,10 @@ module.exports = {
         {
           from: "node_modules/onnxruntime-web/dist/*.wasm",
           to: "./[name][ext]"
+        },
+        {
+          from: "src/github-mark-white.svg",
+          to: "./[name][ext]"
         }
       ],
     }),

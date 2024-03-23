@@ -21,6 +21,7 @@ body, html {
 }
 
 #canvasContainer {
+    position: relative;
     display: flex;
     flex: 4;
     justify-content: center;
@@ -230,4 +231,12 @@ body, html {
 
   .horizontal-button-container{
     display: flex;
+  }
+
+  .bottom-right {
+    position: absolute;
+    bottom: 0px;
+    right: 5px;
+    height: 3em;
+    z-index: 1;
   }
