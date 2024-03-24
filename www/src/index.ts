@@ -2,6 +2,7 @@ import { Message, MeshInputPayload, CopyableEdgeMesh } from "./message";
 import './styles.css';
 import { SVG } from "@svgdotjs/svg.js";
 
+/* All kinds of UI elements */
 const fileUpload = <HTMLInputElement>document.getElementById("image-upload");
 const meshButton = <HTMLButtonElement>document.getElementById("mesh-btn");
 const removeBgButton = <HTMLButtonElement>document.getElementById("remove-bg-btn");
@@ -11,9 +12,10 @@ const canvasContainer = <HTMLDivElement>document.getElementById("canvasContainer
 const canvas = <HTMLCanvasElement>document.getElementById("postproc-area");
 const ctx = canvas.getContext("2d");
 const imageDropArea = <HTMLDivElement>document.getElementById("imageDropArea");
+
+/* Global state, I know, I should avoid this */
 let svgString: string = null;
 var imageData: ImageData = null;
-
 
 // Set up image drop area
 ["dragenter", "dragover"].forEach(eventName => {
@@ -45,104 +47,6 @@ imageDropArea.addEventListener('drop', (ev: DragEvent) => {
 imageDropArea.addEventListener('click', (ev: MouseEvent) => {
  fileUpload.click();
 });
-
-const gmshWorker = new Worker(
-  // @ts-ignore
-  new URL('./gmshworker.ts', import.meta.url)
-);
-
-gmshWorker.addEventListener("message", (ev: MessageEvent<Message>) => {
-  logger_callback("[gmshWorker]" + ev.data.message.toString());
-  if(ev.data.message == "gmshReady"){
-    fileUpload.disabled = false;
-  }
-  else if(ev.data.message == "path2DReady"){
-    ctx.lineWidth = 0.5;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const copyableEdgeMesh = ev.data.payload as CopyableEdgeMesh;
-
-    svgString = copyableEdgeMesh.svgString;
-
-    const path = new Path2D(svgString);
-
-    ctx.stroke(path);
-    meshButton.disabled = false;
-    removeBgButton.disabled = false;
-  }
-});
-
-const u2netWorker = new Worker(
-  // @ts-ignore
-  new URL('./u2networker.ts', import.meta.url)
-);
-
-u2netWorker.addEventListener("message", (ev: MessageEvent<Message>) => {
-  logger_callback("[u2netWorker]" + ev.data.message);
-  if (ev.data.message == "maskReady") {
-    const bitmap = createImageBitmap(ev.data.payload as ImageData).then((bitmap) => {
-      ctx.drawImage(bitmap, 0, 0);
-      imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      meshButton.disabled = false;
-      removeBgButton.disabled = false;
-    });
-  }
-});
-
-const logger_callback = (message: string) => {
-  const log_container = <HTMLDivElement>document.getElementById("log-container");
-  const logEntry = document.createElement("div");
-  logEntry.className = 'log-entry';
-  logEntry.textContent = message;
-  log_container.appendChild(logEntry);
-  log_container.scrollTop = log_container.scrollHeight;
-}
-
-const onNewImage = (file: File) => {
-  const image = new Image();
-  image.src = URL.createObjectURL(file);
-  image.onload = () => {
-    createImageBitmap(image)
-    .then( (imageBitmap) => {
-      // Compute aspect ratio
-      let aspectRatio = imageBitmap.width / imageBitmap.height;
-      let targetHeight = canvasContainer.clientHeight;
-      let targetWidth = canvasContainer.clientWidth;
-      let targetCanvasSize = 400;
-      let rescaledWidth = imageBitmap.width;
-      let rescaledHeight = imageBitmap.height;
-      let canvasWidth = 400;
-      let canvasHeight = 400;
-
-      // Find which one is the longer side
-      if(imageBitmap.width > imageBitmap.height){
-        rescaledWidth = targetWidth;
-        rescaledHeight = Math.round(rescaledWidth / aspectRatio);
-        canvasWidth = targetCanvasSize;
-        canvasHeight = Math.round(canvasWidth / aspectRatio);
-      } else {
-        rescaledHeight = targetHeight;
-        rescaledWidth = Math.round(rescaledHeight * aspectRatio);
-        canvasHeight = targetCanvasSize;
-        canvasWidth = Math.round(canvasHeight * aspectRatio);
-      }
-
-      canvas.style.width = rescaledWidth.toString() + "px";
-      canvas.style.height = rescaledHeight.toString() + "px";
-
-      // The width and height of the canvas should be 
-      canvas.width = canvasWidth;
-      canvas.height = canvasHeight;
-      ctx.drawImage(imageBitmap, 0, 0, canvasWidth, canvasHeight);
-      imageData = ctx.getImageData(0, 0, canvasWidth, canvasHeight);
-      canvas.style.visibility = "visible";
-      imageDropArea.style.visibility = "hidden";
-    } )
-    .then( () => {
-      meshButton.disabled = false;
-      removeBgButton.disabled = false;
-    }  );
-  }
-};
 
 fileUpload.addEventListener("change", (e: Event) => {
   const files = fileUpload.files;
@@ -199,3 +103,103 @@ exportButton.addEventListener("click", (ev: MouseEvent) =>{
   link.href = URL.createObjectURL(blob);
   link.click();
 });
+
+// Init gmsh worker
+const gmshWorker = new Worker(
+  // @ts-ignore
+  new URL('./gmshworker.ts', import.meta.url)
+);
+
+const logger_callback = (message: string) => {
+  const log_container = <HTMLDivElement>document.getElementById("log-container");
+  const logEntry = document.createElement("div");
+  logEntry.className = 'log-entry';
+  logEntry.textContent = message;
+  log_container.appendChild(logEntry);
+  log_container.scrollTop = log_container.scrollHeight;
+}
+
+gmshWorker.addEventListener("message", (ev: MessageEvent<Message>) => {
+  logger_callback("[gmshWorker]" + ev.data.message.toString());
+  if(ev.data.message == "gmshReady"){
+    fileUpload.disabled = false;
+  }
+  else if(ev.data.message == "path2DReady"){
+    ctx.lineWidth = 0.5;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const copyableEdgeMesh = ev.data.payload as CopyableEdgeMesh;
+
+    svgString = copyableEdgeMesh.svgString;
+
+    const path = new Path2D(svgString);
+
+    ctx.stroke(path);
+    meshButton.disabled = false;
+    removeBgButton.disabled = false;
+  }
+});
+
+// Init u2NetWorker
+const u2netWorker = new Worker(
+  // @ts-ignore
+  new URL('./u2networker.ts', import.meta.url)
+);
+
+u2netWorker.addEventListener("message", (ev: MessageEvent<Message>) => {
+  logger_callback("[u2netWorker]" + ev.data.message);
+  if (ev.data.message == "maskReady") {
+    const bitmap = createImageBitmap(ev.data.payload as ImageData).then((bitmap) => {
+      ctx.drawImage(bitmap, 0, 0);
+      imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      meshButton.disabled = false;
+      removeBgButton.disabled = false;
+    });
+  }
+});
+
+const onNewImage = (file: File) => {
+  const image = new Image();
+  image.src = URL.createObjectURL(file);
+  image.onload = () => {
+    createImageBitmap(image)
+    .then( (imageBitmap) => {
+      // Compute aspect ratio
+      let aspectRatio = imageBitmap.width / imageBitmap.height;
+      let targetHeight = canvasContainer.clientHeight;
+      let targetWidth = canvasContainer.clientWidth;
+      let targetCanvasSize = 400;
+      let rescaledWidth = imageBitmap.width;
+      let rescaledHeight = imageBitmap.height;
+      let canvasWidth = 400;
+      let canvasHeight = 400;
+
+      // Find which one is the longer side
+      if(imageBitmap.width > imageBitmap.height){
+        rescaledWidth = targetWidth;
+        rescaledHeight = Math.round(rescaledWidth / aspectRatio);
+        canvasWidth = targetCanvasSize;
+        canvasHeight = Math.round(canvasWidth / aspectRatio);
+      } else {
+        rescaledHeight = targetHeight;
+        rescaledWidth = Math.round(rescaledHeight * aspectRatio);
+        canvasHeight = targetCanvasSize;
+        canvasWidth = Math.round(canvasHeight * aspectRatio);
+      }
+
+      canvas.style.width = rescaledWidth.toString() + "px";
+      canvas.style.height = rescaledHeight.toString() + "px";
+
+      // The width and height of the canvas should be 
+      canvas.width = canvasWidth;
+      canvas.height = canvasHeight;
+      ctx.drawImage(imageBitmap, 0, 0, canvasWidth, canvasHeight);
+      imageData = ctx.getImageData(0, 0, canvasWidth, canvasHeight);
+      canvas.style.visibility = "visible";
+      imageDropArea.style.visibility = "hidden";
+    } )
+    .then( () => {
+      meshButton.disabled = false;
+      removeBgButton.disabled = false;
+    }  );
+  }
+};
