@@ -179,6 +179,10 @@ body, html {
   border-radius: 3px;
 }
 
+.dropdown-content:focus-within{
+  visibility: visible;
+}
+
 .dropdown:hover .dropdown-content {
   visibility: visible;
 }
