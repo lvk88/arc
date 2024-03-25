@@ -170,30 +170,23 @@ const onNewImage = (file: File) => {
       let targetCanvasSize = 400;
       let rescaledWidth = imageBitmap.width;
       let rescaledHeight = imageBitmap.height;
-      let canvasWidth = 400;
-      let canvasHeight = 400;
 
       // Find which one is the longer side
       if(imageBitmap.width > imageBitmap.height){
         rescaledWidth = targetWidth;
         rescaledHeight = Math.round(rescaledWidth / aspectRatio);
-        canvasWidth = targetCanvasSize;
-        canvasHeight = Math.round(canvasWidth / aspectRatio);
       } else {
         rescaledHeight = targetHeight;
         rescaledWidth = Math.round(rescaledHeight * aspectRatio);
-        canvasHeight = targetCanvasSize;
-        canvasWidth = Math.round(canvasHeight * aspectRatio);
       }
 
       canvas.style.width = rescaledWidth.toString() + "px";
       canvas.style.height = rescaledHeight.toString() + "px";
 
-      // The width and height of the canvas should be 
-      canvas.width = canvasWidth;
-      canvas.height = canvasHeight;
-      ctx.drawImage(imageBitmap, 0, 0, canvasWidth, canvasHeight);
-      imageData = ctx.getImageData(0, 0, canvasWidth, canvasHeight);
+      canvas.width = rescaledWidth;
+      canvas.height = rescaledHeight;
+      ctx.drawImage(imageBitmap, 0, 0, rescaledWidth, rescaledHeight);
+      imageData = ctx.getImageData(0, 0, rescaledWidth, rescaledHeight);
       canvas.style.visibility = "visible";
       imageDropArea.style.visibility = "hidden";
     } )

@@ -9,7 +9,32 @@ const logger_callback = (message: string) => {
   postMessage({message: message, payload: null});
 }
 
-const createCopyableEdgeMesh = (mesh: EdgeMesh, height: number) => {
+const resizeForMeshing = async (imageData: ImageData) => {
+  const targetSize = 400;
+  const aspectRatio = imageData.width / imageData.height;
+  let resizedWidth = imageData.width;
+  let resizedHeight = imageData.height;
+  if(imageData.width > imageData.height){
+    resizedWidth = targetSize;
+    resizedHeight = Math.round(resizedWidth / aspectRatio);
+  } else {
+    resizedHeight = targetSize;
+    resizedWidth = Math.round(aspectRatio * resizedHeight);
+  }
+
+  const imageBitmap = await createImageBitmap(imageData);
+
+  const offscreenCanvas = new OffscreenCanvas(resizedWidth, resizedHeight);
+  const offscreenContext = offscreenCanvas.getContext("2d");
+  offscreenContext.drawImage(imageBitmap, 0, 0, resizedWidth, resizedHeight);
+  const resizedImage = offscreenContext.getImageData(0, 0, resizedWidth, resizedHeight);
+
+  let scaleFactor = imageData.width / resizedImage.width;
+
+  return {scaleFactor: scaleFactor, resizedImage: resizedImage};
+};
+
+const createCopyableEdgeMesh = (mesh: EdgeMesh, height: number, scaleFactor: number) => {
   // Note: I keep getting OOM errors if I try to
   // use nodeCoordinates through res, e.g.:
   // const x = res.nodeCoordinates.get(i)
@@ -27,12 +52,12 @@ const createCopyableEdgeMesh = (mesh: EdgeMesh, height: number) => {
     const x_0 = nodeCoordinates.get(3 * node_0);
     const y_0 = nodeCoordinates.get(3 * node_0 + 1);
 
-    const p0 = {x: x_0, y: height - y_0};
+    const p0 = {x: x_0 * scaleFactor, y: (height - y_0) * scaleFactor};
 
     const x_1 = nodeCoordinates.get(3 * node_1);
     const y_1 = nodeCoordinates.get(3 * node_1 + 1);
 
-    const p1 = {x: x_1, y: height - y_1};
+    const p1 = {x: x_1 * scaleFactor, y: (height - y_1) * scaleFactor};
 
     resultEdgeSoup.push({p0: p0, p1: p1});
     svgString += "M" + p0.x.toString() + " " + p0.y.toString() + " " + "L" + p1.x.toString() + " " + p1.y.toString();
@@ -43,8 +68,9 @@ const createCopyableEdgeMesh = (mesh: EdgeMesh, height: number) => {
   return {edgeSoup: resultEdgeSoup, svgString: svgString};
 }
 
-const meshThenCreatePath2D = (meshInput: MeshInputPayload) => {
-  const imageData = meshInput.imageData;
+const meshThenCreatePath2D = async (meshInput: MeshInputPayload) => {
+  const resizedImage = await resizeForMeshing(meshInput.imageData);
+  const imageData = resizedImage.resizedImage;
   const grayScaleBuffer = new Uint8Array(imageData.width * imageData.height);
   for(let i = 0; i < imageData.height; ++i){
     for(let j = 0; j < imageData.width; ++j){
@@ -66,7 +92,7 @@ const meshThenCreatePath2D = (meshInput: MeshInputPayload) => {
 
   const mesh = m.mesh_image(sizedSingleChannelImage, meshOptions, logger_callback);
   meshOptions.delete();
-  const copyableEdgeMesh = createCopyableEdgeMesh(mesh, imageData.height);
+  const copyableEdgeMesh = createCopyableEdgeMesh(mesh, imageData.height, resizedImage.scaleFactor);
   postMessage({message: "path2DReady", payload: copyableEdgeMesh});
 };
 
