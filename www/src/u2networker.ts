@@ -4,7 +4,7 @@ import { Message } from './message';
 addEventListener("message", async (ev: MessageEvent<Message>)  => {
     if(ev.data.message == "removeBackground"){
         postMessage({message:"Starting background removal", payload: null});
-        postMessage({message:"Creating onnx session", payload: null});
+        postMessage({message:"Creating onnx session, this might take up to a minute", payload: null});
         const session = await ort.InferenceSession.create("./u2netp.onnx");
         const inputImage = ev.data.payload as ImageData;
 
@@ -37,7 +37,7 @@ addEventListener("message", async (ev: MessageEvent<Message>)  => {
         // Computed property name
         const input = {[inputName]: inputTensor};
 
-        postMessage({message:"Starting inference", payload: null});
+        postMessage({message:"Starting inference, this might take a while...", payload: null});
         const result = await session.run(input, [outputName]);
         postMessage({message:"Inference done", payload: null});
 
