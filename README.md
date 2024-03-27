@@ -1,6 +1,6 @@
 # ARC - Become a mesh
 
-![alt text](data/banner.gif)o
+![alt text](data/banner.gif)
 
 This is a pure frontend implementation of the image to mesh workflow originally published [here](https://diegomagela.github.io/2023/09/09/become-a-mesh). The meshing part is done by [gmsh](https://gitlab.onelab.info/gmsh/gmsh) that is compiled into webassembly. There is also an automatic background removal thanks to ONNX and the great u2netp hosted at [rembg](https://github.com/danielgatis/rembg).
 
