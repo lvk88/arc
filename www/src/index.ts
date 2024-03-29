@@ -53,6 +53,7 @@ fileUpload.addEventListener("change", (e: Event) => {
   if(files.length == 0) return;
   const file = files[0];
   onNewImage(file);
+  fileUpload.value = null;
 });
 
 meshButton.addEventListener("click", (ev: MouseEvent) => {
